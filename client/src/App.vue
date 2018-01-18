@@ -47,9 +47,10 @@
     </v-navigation-drawer>
     <v-toolbar color="teal darken-3" app absolute clipped-left>
       <v-toolbar-side-icon dark v-if="$vuetify.breakpoint.width <= 1264" @click="drawer = !drawer"></v-toolbar-side-icon>
-      <span class="title white--text">Contract Event Watcher</span>
+      <span class="title white--text hidden-sm-and-down">Contract Event Watcher</span>
+      <span class="title white--text hidden-md-and-up">Contract Events</span>
       <v-spacer></v-spacer>
-      <span class="title" v-bind:style="{ color: blockNumberColor }">Block #: {{blockNumber}}</span>
+      <span class="title" v-bind:style="{ color: blockNumberColor }"><i class="fa fa-cubes" aria-hidden="true"></i> {{blockNumber}}</span>
     </v-toolbar>
     <v-content id="main" class="grey lighten-4">
       <contract :contract="contract"></contract>

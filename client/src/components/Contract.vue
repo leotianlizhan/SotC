@@ -37,20 +37,21 @@
             <v-layout row wrap class="caption text-xs-left">{{item.blockNumber}}</v-layout>
             <v-layout row wrap class="title">{{item.name}}</v-layout>
           </v-container>
-          <v-container slot="header" grid-list-md v-for="(param,j) in item.params" :key="j">
-            <v-layout row class="caption text-xs-left">{{param.name}}:</v-layout>
+          <v-container slot="header" grid-list-md v-for="(param,j) in item.params" :key="j" v-if="j<maxParamsInHeader">
+            <v-layout row class="caption text-xs-left">{{slice12(param.name)}}:</v-layout>
             <v-layout row class="body-1 text-xs-left">{{param.display}}</v-layout>
           </v-container>
+          <div slot="header" v-if="item.params.length>maxParamsInHeader">...</div>
           <!-- Dropdown -->
           <v-card class="grey lighten-3">
             <v-card-text>
               <table>
                 <tr>
-                  <th align="right">Block Number</th>
+                  <th align="right">Block #</th>
                   <td>{{item.blockNumber}}</td>
                 </tr>
                 <tr>
-                  <th align="right">Transaction Hash</th>
+                  <th align="right">Transaction</th>
                   <td><a :href="etherscan + item.txHash" target="_blank">{{item.txHash}}</a></td>
                 </tr>
                 <tr>
@@ -93,7 +94,7 @@ export default {
   watch: {
     contract: function (newVal, oldVal) {
       var self = this
-      console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+      console.log('Contract changed: ', newVal, ' | was: ', oldVal)
       self.events = [];
       if(newVal.address=='' || newVal.abi==null) return;
       // unregister previous listeners
@@ -109,9 +110,9 @@ export default {
       }else{
         self.hasEvents = true;
       }
-      console.log(provider);
       for (var Evt in contract.interface.events) {
         var evt = contract.interface.events[Evt]();
+        console.log(evt);
         (function(curEvt){
           provider.on(curEvt.topics, log=>{
             if(log.address!=contract.address) return;
@@ -123,7 +124,7 @@ export default {
               if(curEvt.inputs[i].type==='address'){ 
                 var fullDisplay = arrayish[i];
                 var display = arrayish[i].slice(0,7) + '...';
-              } else if(curEvt.inputs[i].type==='uint256') {
+              } else if(curEvt.inputs[i].type==='uint256' || curEvt.inputs[i].type==='bytes32') {
                 var fullDisplay = arrayish[i].toString();
                 var display = arrayish[i].toString();
                 if(display.length>8) display = display.slice(0,8) + '...';
@@ -157,6 +158,18 @@ export default {
         self.showLoading = true;
       }, 1200);
     }
+  },
+  methods: {
+    slice12: function(val) {
+      if (val.length>12) return val.slice(0,12) + '..';
+      else return val;
+    }
+  },
+  computed: {
+    maxParamsInHeader: function() {
+      if(this.$vuetify.breakpoint.width<400) return 3;
+      else return 7;
+    }
   }
 }
 </script>
@@ -175,5 +188,10 @@ export default {
 }
 td{
   padding-left: 15px;
+  word-break:break-all;
+}
+table{
+  word-wrap:break-word;
+  table-layout:fixed;
 }
 </style>
