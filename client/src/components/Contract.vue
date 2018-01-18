@@ -1,5 +1,11 @@
 <template>
 <v-container grid-list-md text-xs-center class="grey lighten-4">
+  <v-layout v-if="contract.address.length!=42" row wrap justify-space-around align-center>
+    <v-alert outline class="mt-4" color="info" icon="info" :value="true">
+      <div class="headline">No contract selected</div>
+    </v-alert>
+  </v-layout>
+  <div v-else>
   <v-layout row wrap justify-space-around align-center>
     <v-flex xs12>
       <h1>{{ contract.name }}</h1>
@@ -63,6 +69,7 @@
       </v-expansion-panel>
     </v-flex>
   </v-layout>
+  </div>
 </v-container>
 </template>
 
@@ -97,8 +104,12 @@ export default {
         }
       }
       contract = new Contract(newVal.address, newVal.abi, provider)
-      if(Object.keys(contract.interface.events).length===0) self.hasEvents = false;
-      else self.hasEvents = true;
+      if(Object.keys(contract.interface.events).length===0){
+        self.hasEvents = false;
+      }else{
+        self.hasEvents = true;
+      }
+      console.log(provider);
       for (var Evt in contract.interface.events) {
         var evt = contract.interface.events[Evt]();
         (function(curEvt){

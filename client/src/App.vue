@@ -52,14 +52,7 @@
       <span class="title" v-bind:style="{ color: blockNumberColor }">Block #: {{blockNumber}}</span>
     </v-toolbar>
     <v-content id="main" class="grey lighten-4">
-      <contract :contract="contract" v-if="contract.address!==''"></contract>
-      <v-container v-else grid-list-md text-xs-center class="grey lighten-4">
-        <v-layout row wrap justify-space-around align-center>
-          <v-alert outline class="mt-4" color="info" icon="info" :value="true">
-            <div class="headline">No contract selected</div>
-          </v-alert>
-        </v-layout>
-      </v-container>
+      <contract :contract="contract"></contract>
     </v-content>
     <v-dialog v-model="dialog.show" width="800px">
       <v-card>
@@ -209,6 +202,7 @@
       provider.on('block', number=>{
         self.blockNumber = number;
       });
+      console.log(self.contract.address.length);
     },
     watch: {
       blockNumber: function(newVal, oldVal){
